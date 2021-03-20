@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:native_exif/native_exif.dart';
 
@@ -17,6 +16,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final picker = ImagePicker();
 
+  DateTime? shootingDate;
+
   @override
   void initState() {
     super.initState();
@@ -25,14 +26,15 @@ class _MyAppState extends State<MyApp> {
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
-    final exif = await Exif.fromPath(pickedFile.path);
-    final dateTime = await exif.getOriginalDate();
-
-    if (pickedFile != null) {
-      print(dateTime);
-    } else {
-      print('No image selected.');
+    if (pickedFile == null) {
+      return;
     }
+
+    final exif = await Exif.fromPath(pickedFile.path);
+    shootingDate = await exif.getOriginalDate();
+    await exif.close();
+
+    setState(() {});
   }
 
   @override
@@ -43,9 +45,20 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: ElevatedButton(
-            onPressed: getImage,
-            child: Text('Open image'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(shootingDate == null
+                  ? "Please open an image."
+                  : "The selected image was taken at ${shootingDate.toString()}"),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: getImage,
+                child: Text('Open image'),
+              ),
+            ],
           ),
         ),
       ),

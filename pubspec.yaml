@@ -1,8 +1,7 @@
 name: native_exif
 description: A new flutter plugin project.
 version: 0.0.1
-author:
-homepage:
+homepage: https://github.com/cloudacy/native_exif
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

@@ -20,7 +20,7 @@ class Exif {
   /// Get an Exif attribute from the interface. Can be one of the Exif constants
   /// See https://exiftool.org/TagNames/EXIF.html for all available tags.
   /// Returns `null` when the given [tag] was not found.
-  getAttribute<T>(String tag) async {
+  Future<T> getAttribute<T>(String tag) async {
     if (active == false) {
       throw StateError('Exif interface is already closed.');
     }
@@ -36,7 +36,12 @@ class Exif {
   /// Convenient function to read out the "DateTimeOriginal" tag from the interface.
   /// Returns `null` when no date tag was found in the image metadata.
   Future<DateTime?> getOriginalDate() async {
-    final String dateString = await getAttribute<String>('DateTimeOriginal');
+    final dateString = await getAttribute<String?>('DateTimeOriginal');
+
+    if (dateString == null) {
+      return null;
+    }
+
     final dateFormat = DateFormat("yyyy:MM:dd HH:mm:ss");
 
     try {

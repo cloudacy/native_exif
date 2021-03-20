@@ -53,6 +53,18 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
 
           result.success(exif.getAttribute(tag))
         }
+        "close" -> {
+          val id = call.argument<Int>("id")
+
+          if (id == null) {
+            result.error("BAD_ARGUMENTS", "Bad arguments were given to this method.", null)
+            return
+          }
+
+          interfaces.remove(id)
+
+          result.success(null)
+        }
         else -> {
           result.notImplemented()
         }

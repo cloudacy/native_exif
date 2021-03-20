@@ -33,4 +33,9 @@ class Exif {
       return null;
     }
   }
+
+  Future<void> close() async {
+    await _channel.invokeMethod('close', {'id': _id});
+    active = false;
+  }
 }

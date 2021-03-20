@@ -52,8 +52,6 @@ public class SwiftNativeExifPlugin: NSObject, FlutterPlugin {
         return
       }
       
-      print(interface)
-      
       guard let exif = (interface as NSDictionary)["{Exif}"] as? NSDictionary else {
         result(FlutterError(code: "NO_EXIF_DATA", message: "No Exif data was found on this image.", details: nil))
         return

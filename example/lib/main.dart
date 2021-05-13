@@ -16,6 +16,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final picker = ImagePicker();
 
+  int attributeCount = 0;
   DateTime? shootingDate;
 
   @override
@@ -31,6 +32,8 @@ class _MyAppState extends State<MyApp> {
     }
 
     final exif = await Exif.fromPath(pickedFile.path);
+    final attributes = await exif.getAttributes();
+    attributeCount = attributes?.length ?? 0;
     shootingDate = await exif.getOriginalDate();
     await exif.close();
 
@@ -48,9 +51,15 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(shootingDate == null
-                  ? "Please open an image."
-                  : "The selected image was taken at ${shootingDate.toString()}"),
+              if (shootingDate == null)
+                Text("Please open an image.")
+              else
+                Column(
+                  children: [
+                    Text("The selected image has $attributeCount attributes."),
+                    Text("It was taken at ${shootingDate.toString()}"),
+                  ],
+                ),
               SizedBox(
                 height: 20,
               ),

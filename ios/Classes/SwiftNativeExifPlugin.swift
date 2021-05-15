@@ -173,8 +173,12 @@ public class SwiftNativeExifPlugin: NSObject, FlutterPlugin {
         }
         
         let url = NSURL(fileURLWithPath: interface.path)
-        guard let source = CGImageSourceCreateWithURL(url, nil), let uniformTypeIdentifier = CGImageSourceGetType(source) else {
+        guard let source = CGImageSourceCreateWithURL(url, nil) else {
           throw NativeExifError(code: "SRC_ERROR", message: "Error while creating source", details: nil)
+        }
+        
+        guard let uniformTypeIdentifier = CGImageSourceGetType(source) else {
+          throw NativeExifError(code: "SRC_ERROR", message: "Error while getting source type", details: nil)
         }
         
         guard let destination = CGImageDestinationCreateWithURL(url, uniformTypeIdentifier, 1, nil) else {
@@ -183,6 +187,11 @@ public class SwiftNativeExifPlugin: NSObject, FlutterPlugin {
         
         guard var metadata = try interface.getMetadata() as? [String: AnyObject] else {
           throw NativeExifError(code: "READ_ERROR", message: "Metadata could not be converted to mutable dictionary", details: nil)
+        }
+        
+//        Create exif value if it does not exist (e.g. when the file is generated.
+        if (metadata["{Exif}"] == nil) {
+          metadata["{Exif}"] = NSDictionary()
         }
         
         guard var exif = metadata["{Exif}"] as? [String: AnyObject] else {

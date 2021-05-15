@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:path/path.dart' as p;
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
@@ -17,8 +20,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final picker = ImagePicker();
 
+  PickedFile? pickedFile;
   Exif? exif;
-  int attributeCount = 0;
+  Map<String, Object>? attributes;
   DateTime? shootingDate;
 
   @override
@@ -27,15 +31,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    pickedFile = await picker.getImage(source: ImageSource.gallery);
 
     if (pickedFile == null) {
       return;
     }
 
-    exif = await Exif.fromPath(pickedFile.path);
-    final attributes = await exif!.getAttributes();
-    attributeCount = attributes?.length ?? 0;
+    exif = await Exif.fromPath(pickedFile!.path);
+    attributes = await exif!.getAttributes();
     shootingDate = await exif!.getOriginalDate();
 
     setState(() {});
@@ -44,7 +47,6 @@ class _MyAppState extends State<MyApp> {
   Future closeImage() async {
     await exif!.close();
     shootingDate = null;
-    attributeCount = 0;
 
     setState(() {});
   }
@@ -60,13 +62,14 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (shootingDate == null)
+              if (pickedFile == null)
                 Text("Please open an image.")
               else
                 Column(
                   children: [
-                    Text("The selected image has $attributeCount attributes."),
+                    Text("The selected image has ${attributes?.length ?? 0} attributes."),
                     Text("It was taken at ${shootingDate.toString()}"),
+                    Text(attributes?["UserComment"]?.toString() ?? ''),
                     TextButton(
                       onPressed: () async {
                         final dateFormat = DateFormat('yyyy:MM:dd HH:mm:ss');
@@ -85,9 +88,7 @@ class _MyAppState extends State<MyApp> {
                             {'DateTimeOriginal': dateFormat.format(DateTime.now()), 'ImageUniqueID': '123456'});
 
                         shootingDate = await exif!.getOriginalDate();
-                        final attributes = await exif!.getAttributes();
-
-                        attributeCount = attributes?.length ?? 0;
+                        attributes = await exif!.getAttributes();
 
                         setState(() {});
                       },
@@ -107,6 +108,28 @@ class _MyAppState extends State<MyApp> {
                 onPressed: getImage,
                 child: Text('Open image'),
               ),
+              if (pickedFile != null)
+                ElevatedButton(
+                  onPressed: () async {
+                    final file = File(p.join(Directory.systemTemp.path, 'tempimage.jpg'));
+                    final imageBytes = await pickedFile!.readAsBytes();
+                    await file.create();
+                    await file.writeAsBytes(imageBytes);
+                    final _attributes = await exif!.getAttributes();
+                    final newExif = await Exif.fromPath(file.path);
+
+                    _attributes!['DateTimeOriginal'] = '2021:05:15 13:00:00';
+                    _attributes['UserComment'] = "This file is user generated!";
+
+                    await newExif.writeAttributes(_attributes);
+
+                    shootingDate = await newExif.getOriginalDate();
+                    attributes = await newExif.getAttributes();
+
+                    setState(() {});
+                  },
+                  child: Text("Create file and write exif data"),
+                )
             ],
           ),
         ),

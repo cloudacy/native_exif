@@ -91,6 +91,7 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
             ExifInterface.TAG_MAKE,
             ExifInterface.TAG_MODEL,
             ExifInterface.TAG_ORIENTATION,
+            ExifInterface.TAG_SOFTWARE,
             ExifInterface.TAG_SUBSEC_TIME,
             ExifInterface.TAG_SUBSEC_TIME_ORIGINAL,
             ExifInterface.TAG_SUBSEC_TIME_DIGITIZED,
@@ -122,6 +123,30 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
           }
 
           exif.setAttribute(tag, value)
+          exif.saveAttributes()
+
+          result.success(null)
+        }
+        "setAttributes" -> {
+          val id = call.argument<Int>("id")
+          val values = call.argument<Map<String, String>>("values")
+
+          if (id == null || values == null) {
+            result.error("BAD_ARGUMENTS", "Bad arguments were given to this method.", null)
+            return
+          }
+
+          val exif = interfaces[id]
+
+          if (exif == null) {
+            result.error("NOT_FOUND", "Exif with given id was not found in memory", null)
+            return
+          }
+
+          for (value in values) {
+            exif.setAttribute(value.key, value.value)
+          }
+
           exif.saveAttributes()
 
           result.success(null)

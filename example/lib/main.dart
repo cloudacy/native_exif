@@ -82,12 +82,11 @@ class _MyAppState extends State<MyApp> {
                       onPressed: () async {
                         final dateFormat = DateFormat('yyyy:MM:dd HH:mm:ss');
                         await exif!.writeAttributes(
-                            {'DateTimeOriginal': dateFormat.format(DateTime.now()), 'Software': 'Native Exif'});
+                            {'DateTimeOriginal': dateFormat.format(DateTime.now()), 'ImageUniqueID': '123456'});
 
                         shootingDate = await exif!.getOriginalDate();
                         final attributes = await exif!.getAttributes();
 
-                        print(attributes);
                         attributeCount = attributes?.length ?? 0;
 
                         setState(() {});

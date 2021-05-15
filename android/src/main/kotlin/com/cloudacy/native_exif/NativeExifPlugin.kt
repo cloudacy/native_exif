@@ -104,6 +104,28 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
 
           result.success(attributeMap)
         }
+        "setAttribute" -> {
+          val id = call.argument<Int>("id")
+          val tag = call.argument<String>("tag")
+          val value = call.argument<String>("value")
+
+          if (id == null || tag == null || value == null) {
+            result.error("BAD_ARGUMENTS", "Bad arguments were given to this method.", null)
+            return
+          }
+
+          val exif = interfaces[id]
+
+          if (exif == null) {
+            result.error("NOT_FOUND", "Exif with given id was not found in memory", null)
+            return
+          }
+
+          exif.setAttribute(tag, value)
+          exif.saveAttributes()
+
+          result.success(null)
+        }
         "close" -> {
           val id = call.argument<Int>("id")
 

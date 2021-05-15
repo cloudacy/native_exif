@@ -59,6 +59,19 @@ class Exif {
     return;
   }
 
+  Future<void> writeAttributes(Map<String, Object> values) async {
+    if (active == false) {
+      throw StateError('Exif interface is already closed.');
+    }
+
+    await _channel.invokeMethod('setAttributes', {
+      'id': _id,
+      'values': values,
+    });
+
+    return;
+  }
+
   /// Convenient function to read out the "DateTimeOriginal" tag from the interface.
   /// Returns `null` when no date tag was found in the image metadata.
   Future<DateTime?> getOriginalDate() async {

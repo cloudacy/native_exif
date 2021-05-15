@@ -100,6 +100,7 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
             ExifInterface.TAG_SUBSEC_TIME,
             ExifInterface.TAG_SUBSEC_TIME_ORIGINAL,
             ExifInterface.TAG_SUBSEC_TIME_DIGITIZED,
+            ExifInterface.TAG_USER_COMMENT,
             ExifInterface.TAG_WHITE_BALANCE
           )
 

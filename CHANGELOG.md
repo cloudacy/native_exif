@@ -1,3 +1,8 @@
+## 0.1.0
+
+- Add write functionality for android and ios
+- Add more tags for android to fetch more information
+
 ## 0.0.3
 
 - Improve null safety

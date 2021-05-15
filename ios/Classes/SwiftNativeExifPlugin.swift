@@ -161,6 +161,55 @@ public class SwiftNativeExifPlugin: NSObject, FlutterPlugin {
       } catch {
         result(FlutterError())
       }
+    case "setAttributes":
+      do {
+        let arguments = try getArguments(call.arguments)
+        guard let id = arguments["id"] as? Int else {
+          throw NativeExifError.badArguments(message: "id field must be of type integer.", details: nil)
+        }
+        
+        guard let interface = interfaces[id] else {
+          throw NativeExifError(code: "NOT_FOUND", message: "No ExifInterface was found with given id", details: nil)
+        }
+        
+        let url = NSURL(fileURLWithPath: interface.path)
+        guard let source = CGImageSourceCreateWithURL(url, nil), let uniformTypeIdentifier = CGImageSourceGetType(source) else {
+          throw NativeExifError(code: "SRC_ERROR", message: "Error while creating source", details: nil)
+        }
+        
+        guard let destination = CGImageDestinationCreateWithURL(url, uniformTypeIdentifier, 1, nil) else {
+          throw NativeExifError(code: "WRITE_ERROR", message: "Error while creating destination for writing metadata", details: nil)
+        }
+        
+        guard var metadata = try interface.getMetadata() as? [String: AnyObject] else {
+          throw NativeExifError(code: "READ_ERROR", message: "Metadata could not be converted to mutable dictionary", details: nil)
+        }
+        
+        guard var exif = metadata["{Exif}"] as? [String: AnyObject] else {
+          throw NativeExifError(code: "READ_ERROR", message: "No Exif data was found on this image.", details: nil)
+        }
+        
+        guard let values = arguments["values"] as? Dictionary<String, AnyObject> else {
+          throw NativeExifError.badArguments(message: "values field must be of type Dictionary.", details: nil)
+        }
+        
+        for value in values {
+          exif[value.key] = value.value
+        }
+
+        metadata["{Exif}"] = exif as AnyObject
+        
+        CGImageDestinationAddImageFromSource(destination, source, 0, metadata as CFDictionary)
+        guard CGImageDestinationFinalize(destination) else {
+          throw NativeExifError(code: "WRITE_ERROR", message: "Error while finalizing destination for writing metadata", details: nil)
+        }
+        
+        result(nil)
+      } catch let error as NativeExifError {
+        result(error.toFlutterError())
+      } catch {
+        result(FlutterError())
+      }
     case "close":
       do {
         let arguments = try getArguments(call.arguments)

@@ -79,8 +79,25 @@ class _MyAppState extends State<MyApp> {
                       child: Text('Update date attribute'),
                     ),
                     TextButton(
+                      onPressed: () async {
+                        final dateFormat = DateFormat('yyyy:MM:dd HH:mm:ss');
+                        await exif!.writeAttributes(
+                            {'DateTimeOriginal': dateFormat.format(DateTime.now()), 'Software': 'Native Exif'});
+
+                        shootingDate = await exif!.getOriginalDate();
+                        final attributes = await exif!.getAttributes();
+
+                        print(attributes);
+                        attributeCount = attributes?.length ?? 0;
+
+                        setState(() {});
+                      },
+                      child: Text('Update date attribute and add new attribute'),
+                    ),
+                    ElevatedButton(
                       onPressed: closeImage,
                       child: Text('Close image'),
+                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
                     )
                   ],
                 ),

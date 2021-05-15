@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:native_exif/native_exif.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final picker = ImagePicker();
 
+  Exif? exif;
   int attributeCount = 0;
   DateTime? shootingDate;
 
@@ -31,11 +33,18 @@ class _MyAppState extends State<MyApp> {
       return;
     }
 
-    final exif = await Exif.fromPath(pickedFile.path);
-    final attributes = await exif.getAttributes();
+    exif = await Exif.fromPath(pickedFile.path);
+    final attributes = await exif!.getAttributes();
     attributeCount = attributes?.length ?? 0;
-    shootingDate = await exif.getOriginalDate();
-    await exif.close();
+    shootingDate = await exif!.getOriginalDate();
+
+    setState(() {});
+  }
+
+  Future closeImage() async {
+    await exif!.close();
+    shootingDate = null;
+    attributeCount = 0;
 
     setState(() {});
   }
@@ -58,6 +67,21 @@ class _MyAppState extends State<MyApp> {
                   children: [
                     Text("The selected image has $attributeCount attributes."),
                     Text("It was taken at ${shootingDate.toString()}"),
+                    TextButton(
+                      onPressed: () async {
+                        final dateFormat = DateFormat('yyyy:MM:dd HH:mm:ss');
+                        await exif!.writeAttribute('DateTimeOriginal', dateFormat.format(DateTime.now()));
+
+                        shootingDate = await exif!.getOriginalDate();
+
+                        setState(() {});
+                      },
+                      child: Text('Update date attribute'),
+                    ),
+                    TextButton(
+                      onPressed: closeImage,
+                      child: Text('Close image'),
+                    )
                   ],
                 ),
               SizedBox(

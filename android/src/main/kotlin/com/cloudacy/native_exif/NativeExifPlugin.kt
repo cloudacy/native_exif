@@ -68,11 +68,15 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
 
           /// As all relevant fields are private for the exif interface, we have to list all common tags here. To be extended..
           var tags = arrayOf(
+            ExifInterface.TAG_ARTIST,
             ExifInterface.TAG_APERTURE_VALUE,
+            ExifInterface.TAG_CUSTOM_RENDERED,
             ExifInterface.TAG_DATETIME,
             ExifInterface.TAG_DATETIME_DIGITIZED,
             ExifInterface.TAG_DATETIME_ORIGINAL,
+            ExifInterface.TAG_DIGITAL_ZOOM_RATIO,
             ExifInterface.TAG_EXPOSURE_TIME,
+            ExifInterface.TAG_EXPOSURE_PROGRAM,
             ExifInterface.TAG_F_NUMBER,
             ExifInterface.TAG_FLASH,
             ExifInterface.TAG_FOCAL_LENGTH,
@@ -86,6 +90,7 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
             ExifInterface.TAG_GPS_PROCESSING_METHOD,
             ExifInterface.TAG_GPS_TIMESTAMP,
             ExifInterface.TAG_IMAGE_LENGTH,
+            ExifInterface.TAG_IMAGE_UNIQUE_ID,
             ExifInterface.TAG_IMAGE_WIDTH,
             ExifInterface.TAG_ISO_SPEED_RATINGS,
             ExifInterface.TAG_MAKE,

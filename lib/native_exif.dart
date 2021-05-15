@@ -33,7 +33,7 @@ class Exif {
     return result;
   }
 
-  Future<Map<dynamic, dynamic>?> getAttributes() async {
+  Future<Map<String, Object>?> getAttributes() async {
     if (active == false) {
       throw StateError('Exif interface is already closed.');
     }
@@ -42,7 +42,9 @@ class Exif {
       'id': _id,
     });
 
-    return result;
+    if (result != null) {
+      return Map<String, Object>.from(result);
+    }
   }
 
   Future<void> writeAttribute<T>(String tag, T value) async {

@@ -1,3 +1,8 @@
+## 0.1.1
+
+- Add user comment tag for android
+- Fix writing on generated files not working
+
 ## 0.1.0
 
 - Add write functionality for android and ios

@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Added simple README.md
+
 ## 0.1.1
 
 - Add user comment tag for android

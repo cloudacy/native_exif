@@ -1,15 +1,27 @@
 # native_exif
 
-A new flutter plugin project.
+A simple EXIF metadata reader for flutter using native functions from iOS and Android.
+This plugin does **only** work on iOS and Android. Flutter Web or Windows is not yet supported.
 
-## Getting Started
+## Usage
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+First create a EXIF reader instance by reading out an image path:
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```dart
+final exif = await Exif.fromPath(pickedFile!.path);
+```
 
+Now you can run either pre-defined functions or get all attributes:
+
+```dart
+final shootingDate = await exif.getOriginalDate();
+final attributes = await exif.getAttributes();
+```
+
+## Docs
+
+For code docs, you can use the [automatically generated reference on pub.dev](https://pub.dev/documentation/native_exif/latest/).
+
+## Example
+
+For a better usage example, see the example folder or use the [example page on pub.dev](https://pub.dev/packages/native_exif/example).

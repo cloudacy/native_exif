@@ -1,3 +1,9 @@
+## 0.2.0
+
+- Add support for [GPS attributes](https://developer.apple.com/documentation/imageio/gps_dictionary_keys) on iOS devices.
+- Extended README.md.
+- Extended example app.
+
 ## 0.1.2
 
 - Added simple README.md

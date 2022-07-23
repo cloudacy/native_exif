@@ -1,7 +1,6 @@
 # native_exif
 
-A simple EXIF metadata reader for flutter using native functions from iOS and Android.
-This plugin does **only** work on iOS and Android. Flutter Web or Windows is not yet supported.
+A simple EXIF metadata reader/writer for Flutter using native functions from iOS and Android.
 
 ## Usage
 
@@ -11,14 +10,44 @@ First create a EXIF reader instance by reading out an image path:
 final exif = await Exif.fromPath(pickedFile!.path);
 ```
 
+### Reading attributes
+
 Now you can run either pre-defined functions or get all attributes:
 
 ```dart
-final shootingDate = await exif.getOriginalDate();
+final originalDate = await exif.getOriginalDate();
 final attributes = await exif.getAttributes();
 ```
 
-## Docs
+### Writing attributes
+
+```dart
+await exif.writeAttribute("key", "value");
+await exif.writeAttributes({"key1": "value1", "key2": "value2"});
+```
+
+### Close the exif interface
+
+```dart
+await exif.close();
+```
+
+## Platform notes
+
+This plugin does **only** work on iOS and Android. Other platforms are not yet supported.
+
+### Android
+
+Only specific EXIF and GPS attributes are supported. Please look at [android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt](https://github.com/cloudacy/native_exif/blob/main/android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt) for a list of supported attributes.
+
+### iOS
+
+Only specific EXIF and GPS attributes are supported. Please look at [EXIF dictionary keys](https://developer.apple.com/documentation/imageio/exif_dictionary_keys) and [GPS dictionary keys](https://developer.apple.com/documentation/imageio/gps_dictionary_keys) for supported attributes.
+
+Please note that all [GPS dictionary keys](https://developer.apple.com/documentation/imageio/gps_dictionary_keys) need to be prefixed with `GPS`.
+For example: `kCGImagePropertyGPSLatitude` == `"Latitude"`, which equals to `"GPSLatitude"` in `native_exif`.
+
+## API Docs
 
 For code docs, you can use the [automatically generated reference on pub.dev](https://pub.dev/documentation/native_exif/latest/).
 

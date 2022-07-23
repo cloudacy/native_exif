@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class Exif {
-  static const MethodChannel _channel = const MethodChannel('native_exif');
+  static const MethodChannel _channel = MethodChannel('native_exif');
 
   final int _id;
   bool active = true;
@@ -45,6 +45,8 @@ class Exif {
     if (result != null) {
       return Map<String, Object>.from(result);
     }
+
+    return null;
   }
 
   Future<void> writeAttribute<T>(String tag, T value) async {

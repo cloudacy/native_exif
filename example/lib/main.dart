@@ -9,18 +9,22 @@ import 'package:image_picker/image_picker.dart';
 import 'package:native_exif/native_exif.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MaterialApp(home: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({
+    Key? key,
+  }) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   final picker = ImagePicker();
 
-  PickedFile? pickedFile;
+  XFile? pickedFile;
   Exif? exif;
   Map<String, Object>? attributes;
   DateTime? shootingDate;
@@ -30,9 +34,34 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  Future getImage() async {
-    pickedFile = await picker.getImage(source: ImageSource.gallery);
+  Future<void> showError(Object e) async {
+    return showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Text(e.toString()),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
+  Future getImage() async {
+    pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile == null) {
       return;
     }
@@ -45,80 +74,93 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future closeImage() async {
-    await exif!.close();
+    await exif?.close();
     shootingDate = null;
+    attributes = {};
+    exif = null;
 
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (pickedFile == null)
-                Text("Please open an image.")
-              else
-                Column(
-                  children: [
-                    Text("The selected image has ${attributes?.length ?? 0} attributes."),
-                    Text("It was taken at ${shootingDate.toString()}"),
-                    Text(attributes?["UserComment"]?.toString() ?? ''),
-                    TextButton(
-                      onPressed: () async {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (pickedFile == null)
+              const Text("Please open an image.")
+            else
+              Column(
+                children: [
+                  Text("The selected image has ${attributes?.length ?? 0} attributes."),
+                  Text("It was taken at ${shootingDate.toString()}"),
+                  Text(attributes?["UserComment"]?.toString() ?? ''),
+                  Text("Attributes: $attributes"),
+                  TextButton(
+                    onPressed: () async {
+                      try {
                         final dateFormat = DateFormat('yyyy:MM:dd HH:mm:ss');
                         await exif!.writeAttribute('DateTimeOriginal', dateFormat.format(DateTime.now()));
-
-                        shootingDate = await exif!.getOriginalDate();
-
-                        setState(() {});
-                      },
-                      child: Text('Update date attribute'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        final dateFormat = DateFormat('yyyy:MM:dd HH:mm:ss');
-                        await exif!.writeAttributes(
-                            {'DateTimeOriginal': dateFormat.format(DateTime.now()), 'ImageUniqueID': '123456'});
 
                         shootingDate = await exif!.getOriginalDate();
                         attributes = await exif!.getAttributes();
 
                         setState(() {});
-                      },
-                      child: Text('Update date attribute and add new attribute'),
-                    ),
-                    ElevatedButton(
-                      onPressed: closeImage,
-                      child: Text('Close image'),
-                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
-                    )
-                  ],
-                ),
-              SizedBox(
-                height: 20,
+                      } catch (e) {
+                        showError(e);
+                      }
+                    },
+                    child: const Text('Update date attribute'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      try {
+                        await exif!.writeAttributes({
+                          'GPSLatitude': 1.0,
+                          'GPSLatitudeRef': 'N',
+                          'GPSLongitude': 2.0,
+                          'GPSLongitudeRef': 'E',
+                        });
+
+                        shootingDate = await exif!.getOriginalDate();
+                        attributes = await exif!.getAttributes();
+
+                        setState(() {});
+                      } catch (e) {
+                        showError(e);
+                      }
+                    },
+                    child: const Text('Update GPS attributes'),
+                  ),
+                  ElevatedButton(
+                    onPressed: closeImage,
+                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
+                    child: const Text('Close image'),
+                  )
+                ],
               ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: getImage,
+              child: const Text('Open image'),
+            ),
+            if (pickedFile != null)
               ElevatedButton(
-                onPressed: getImage,
-                child: Text('Open image'),
-              ),
-              if (pickedFile != null)
-                ElevatedButton(
-                  onPressed: () async {
+                onPressed: () async {
+                  try {
                     final file = File(p.join(Directory.systemTemp.path, 'tempimage.jpg'));
                     final imageBytes = await pickedFile!.readAsBytes();
                     await file.create();
                     await file.writeAsBytes(imageBytes);
-                    final _attributes = await exif!.getAttributes();
+                    final _attributes = await exif?.getAttributes() ?? {};
                     final newExif = await Exif.fromPath(file.path);
 
-                    _attributes!['DateTimeOriginal'] = '2021:05:15 13:00:00';
+                    _attributes['DateTimeOriginal'] = '2021:05:15 13:00:00';
                     _attributes['UserComment'] = "This file is user generated!";
 
                     await newExif.writeAttributes(_attributes);
@@ -127,11 +169,13 @@ class _MyAppState extends State<MyApp> {
                     attributes = await newExif.getAttributes();
 
                     setState(() {});
-                  },
-                  child: Text("Create file and write exif data"),
-                )
-            ],
-          ),
+                  } catch (e) {
+                    showError(e);
+                  }
+                },
+                child: const Text("Create file and write exif data"),
+              ),
+          ],
         ),
       ),
     );

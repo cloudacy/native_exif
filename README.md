@@ -40,6 +40,10 @@ This plugin does **only** work on iOS and Android. Other platforms are not yet s
 
 Only specific EXIF and GPS attributes are supported. Please look at [android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt](https://github.com/cloudacy/native_exif/blob/main/android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt) for a list of supported attributes.
 
+All raw attribute values must be of type `String`.
+
+`GPSLatitude` and `GPSLongitude` require a fraction-based format. See [here](https://developer.android.com/reference/android/media/ExifInterface#TAG_GPS_LATITUDE) and [here](https://developer.android.com/reference/android/media/ExifInterface#TAG_GPS_LONGITUDE) for more details.
+
 ### iOS
 
 Only specific EXIF and GPS attributes are supported. Please look at [EXIF dictionary keys](https://developer.apple.com/documentation/imageio/exif_dictionary_keys) and [GPS dictionary keys](https://developer.apple.com/documentation/imageio/gps_dictionary_keys) for supported attributes.

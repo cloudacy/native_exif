@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Add support for the [Orientation](https://developer.apple.com/documentation/imageio/cgimagepropertyorientation) property on iOS devices.
+
 ## 0.2.0
 
 - Add support for [GPS attributes](https://developer.apple.com/documentation/imageio/gps_dictionary_keys) on iOS devices.

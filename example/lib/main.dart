@@ -120,6 +120,20 @@ class _MyAppState extends State<MyApp> {
                   TextButton(
                     onPressed: () async {
                       try {
+                        await exif!.writeAttribute('Orientation', '1');
+
+                        attributes = await exif!.getAttributes();
+
+                        setState(() {});
+                      } catch (e) {
+                        showError(e);
+                      }
+                    },
+                    child: const Text('Set orientation to 1'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      try {
                         await exif!.writeAttributes({
                           'GPSLatitude': 1.0,
                           'GPSLatitudeRef': 'N',

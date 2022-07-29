@@ -73,6 +73,10 @@ public class SwiftNativeExifPlugin: NSObject, FlutterPlugin {
     
     let exif = [:] as NSMutableDictionary
     
+    if metadata[kCGImagePropertyOrientation as String] != nil {
+      exif["Orientation"] = metadata[kCGImagePropertyOrientation as String] as Any
+    }
+    
     if metadata[kCGImagePropertyExifDictionary as String] != nil {
       exif.addEntries(from: metadata[kCGImagePropertyExifDictionary as String] as! [AnyHashable : Any])
     }
@@ -117,7 +121,9 @@ public class SwiftNativeExifPlugin: NSObject, FlutterPlugin {
     var gps = ((metadata[kCGImagePropertyGPSDictionary as String] as? NSDictionary)?.mutableCopy() ?? [String : AnyObject]()) as! [String : AnyObject]
     
     for value in attributes {
-      if value.key.hasPrefix("GPS") {
+      if value.key == "Orientation" {
+        metadata[kCGImagePropertyOrientation as String] = value.value as AnyObject
+      } else if value.key.hasPrefix("GPS") {
         let tag = String(value.key.dropFirst(3))
         gps[tag] = value.value
       } else {

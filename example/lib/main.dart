@@ -135,9 +135,9 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       try {
                         await exif!.writeAttributes({
-                          'GPSLatitude': 1.0,
+                          'GPSLatitude': Platform.isAndroid ? '1/1' : '1.0',
                           'GPSLatitudeRef': 'N',
-                          'GPSLongitude': 2.0,
+                          'GPSLongitude': Platform.isAndroid ? '2/1' : '2.0',
                           'GPSLongitudeRef': 'E',
                         });
 

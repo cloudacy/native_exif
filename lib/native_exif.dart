@@ -2,6 +2,19 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+class ExifLatLong {
+  final double latitude;
+  final double longitude;
+
+  const ExifLatLong({
+    required this.latitude,
+    required this.longitude,
+  });
+
+  @override
+  String toString() => 'ExifLatLong(lat: $latitude, long: $longitude)';
+}
+
 class Exif {
   static const MethodChannel _channel = MethodChannel('native_exif');
 
@@ -49,7 +62,7 @@ class Exif {
     return null;
   }
 
-  Future<void> writeAttribute<T>(String tag, T value) async {
+  Future<void> writeAttribute(String tag, Object value) async {
     if (active == false) {
       throw StateError('Exif interface is already closed.');
     }
@@ -59,8 +72,6 @@ class Exif {
       'tag': tag,
       'value': value,
     });
-
-    return;
   }
 
   Future<void> writeAttributes(Map<String, Object> values) async {
@@ -72,8 +83,6 @@ class Exif {
       'id': _id,
       'values': values,
     });
-
-    return;
   }
 
   /// Convenient function to read out the "DateTimeOriginal" tag from the interface.
@@ -92,6 +101,24 @@ class Exif {
     } catch (e) {
       return null;
     }
+  }
+
+  Future<ExifLatLong?> getLatLong() async {
+    final attributes = await getAttributes();
+    if (attributes == null) return null;
+
+    final latitude = attributes['GPSLatitude'];
+    final latitudeRef = attributes['GPSLatitudeRef'];
+    final longitude = attributes['GPSLongitude'];
+    final longitudeRef = attributes['GPSLongitudeRef'];
+    if (latitude is! double || latitudeRef is! String || longitude is! double || longitudeRef is! String) {
+      return null;
+    }
+
+    return ExifLatLong(
+      latitude: latitude * (latitudeRef == 'S' ? -1 : 1),
+      longitude: longitude * (longitudeRef == 'W' ? -1 : 1),
+    );
   }
 
   /// Close the exif interface to keep memory clean

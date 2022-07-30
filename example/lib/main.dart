@@ -28,6 +28,7 @@ class _MyAppState extends State<MyApp> {
   Exif? exif;
   Map<String, Object>? attributes;
   DateTime? shootingDate;
+  ExifLatLong? coordinates;
 
   @override
   void initState() {
@@ -69,6 +70,7 @@ class _MyAppState extends State<MyApp> {
     exif = await Exif.fromPath(pickedFile!.path);
     attributes = await exif!.getAttributes();
     shootingDate = await exif!.getOriginalDate();
+    coordinates = await exif!.getLatLong();
 
     setState(() {});
   }
@@ -78,6 +80,7 @@ class _MyAppState extends State<MyApp> {
     shootingDate = null;
     attributes = {};
     exif = null;
+    coordinates = null;
 
     setState(() {});
   }
@@ -101,6 +104,7 @@ class _MyAppState extends State<MyApp> {
                   Text("It was taken at ${shootingDate.toString()}"),
                   Text(attributes?["UserComment"]?.toString() ?? ''),
                   Text("Attributes: $attributes"),
+                  Text("Coordinates: $coordinates"),
                   TextButton(
                     onPressed: () async {
                       try {
@@ -135,14 +139,15 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       try {
                         await exif!.writeAttributes({
-                          'GPSLatitude': Platform.isAndroid ? '1/1' : '1.0',
+                          'GPSLatitude': '1.0',
                           'GPSLatitudeRef': 'N',
-                          'GPSLongitude': Platform.isAndroid ? '2/1' : '2.0',
-                          'GPSLongitudeRef': 'E',
+                          'GPSLongitude': '2.0',
+                          'GPSLongitudeRef': 'W',
                         });
 
                         shootingDate = await exif!.getOriginalDate();
                         attributes = await exif!.getAttributes();
+                        coordinates = await exif!.getLatLong();
 
                         setState(() {});
                       } catch (e) {
@@ -181,6 +186,7 @@ class _MyAppState extends State<MyApp> {
 
                     shootingDate = await newExif.getOriginalDate();
                     attributes = await newExif.getAttributes();
+                    coordinates = await newExif.getLatLong();
 
                     setState(() {});
                   } catch (e) {

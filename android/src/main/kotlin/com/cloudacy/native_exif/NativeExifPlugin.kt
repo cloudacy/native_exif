@@ -7,6 +7,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import kotlin.math.absoluteValue
 
 /** NativeExifPlugin */
 class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
@@ -22,6 +23,36 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "native_exif")
     channel.setMethodCallHandler(this)
+  }
+
+  private fun setAttributes(exif: ExifInterface, values: Map<String, Any>) {
+    if (
+      values.containsKey(ExifInterface.TAG_GPS_LATITUDE) ||
+      values.containsKey(ExifInterface.TAG_GPS_LONGITUDE)
+    ) {
+      var lat = values[ExifInterface.TAG_GPS_LATITUDE] ?: exif.latLong?.get(0)
+      var long = values[ExifInterface.TAG_GPS_LONGITUDE] ?: exif.latLong?.get(1)
+      if (lat is String) {
+        lat = lat.toDouble()
+      } else if (lat !is Double) {
+        throw NumberFormatException("Invalid " + ExifInterface.TAG_GPS_LATITUDE + " value given. Must be of type Double or String.")
+      }
+      if (long is String) {
+        long = long.toDouble()
+      } else if (long !is Double) {
+        throw NumberFormatException("Invalid " + ExifInterface.TAG_GPS_LONGITUDE + " value given. Must be of type Double or String.")
+      }
+
+      exif.setLatLong(lat, long)
+    }
+
+    for (value in values) {
+      if (value.key == ExifInterface.TAG_GPS_LATITUDE || value.key == ExifInterface.TAG_GPS_LONGITUDE) {
+        continue
+      }
+
+      exif.setAttribute(value.key, value.value as String)
+    }
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -49,7 +80,13 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
             return
           }
 
-          result.success(exif.getAttribute(tag))
+          if (tag == ExifInterface.TAG_GPS_LATITUDE) {
+            result.success(exif.latLong?.get(0)?.absoluteValue)
+          } else if (tag == ExifInterface.TAG_GPS_LONGITUDE) {
+            result.success(exif.latLong?.get(1)?.absoluteValue)
+          } else {
+            result.success(exif.getAttribute(tag))
+          }
         }
         "getAttributes" -> {
           val id = call.argument<Int>("id")
@@ -67,7 +104,7 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
           }
 
           /// As all relevant fields are private for the exif interface, we have to list all common tags here. To be extended..
-          var tags = arrayOf(
+          val tags = arrayOf(
             ExifInterface.TAG_ARTIST,
             ExifInterface.TAG_APERTURE_VALUE,
             ExifInterface.TAG_CUSTOM_RENDERED,
@@ -83,9 +120,7 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
             ExifInterface.TAG_GPS_ALTITUDE,
             ExifInterface.TAG_GPS_ALTITUDE_REF,
             ExifInterface.TAG_GPS_DATESTAMP,
-            ExifInterface.TAG_GPS_LATITUDE,
             ExifInterface.TAG_GPS_LATITUDE_REF,
-            ExifInterface.TAG_GPS_LONGITUDE,
             ExifInterface.TAG_GPS_LONGITUDE_REF,
             ExifInterface.TAG_GPS_PROCESSING_METHOD,
             ExifInterface.TAG_GPS_TIMESTAMP,
@@ -104,10 +139,16 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
             ExifInterface.TAG_WHITE_BALANCE
           )
 
-          val attributeMap = HashMap<String, String>()
+          val attributeMap = HashMap<String, Any>()
 
           for (tag in tags)
             exif.getAttribute(tag)?.let { attributeMap[tag] = it }
+
+          val latLong = exif.latLong
+          if (latLong != null) {
+            attributeMap[ExifInterface.TAG_GPS_LATITUDE] = latLong[0].absoluteValue
+            attributeMap[ExifInterface.TAG_GPS_LONGITUDE] = latLong[1].absoluteValue
+          }
 
           result.success(attributeMap)
         }
@@ -128,14 +169,14 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
             return
           }
 
-          exif.setAttribute(tag, value)
+          setAttributes(exif, mapOf<String, Any>(tag to value))
           exif.saveAttributes()
 
           result.success(null)
         }
         "setAttributes" -> {
           val id = call.argument<Int>("id")
-          val values = call.argument<Map<String, String>>("values")
+          val values = call.argument<Map<String, Any>>("values")
 
           if (id == null || values == null) {
             result.error("BAD_ARGUMENTS", "Bad arguments were given to this method.", null)
@@ -149,10 +190,7 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
             return
           }
 
-          for (value in values) {
-            exif.setAttribute(value.key, value.value)
-          }
-
+          setAttributes(exif, values)
           exif.saveAttributes()
 
           result.success(null)

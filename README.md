@@ -42,7 +42,7 @@ Only specific EXIF and GPS attributes are supported. Please look at [android/src
 
 All raw attribute values must be of type `String`.
 
-`GPSLatitude` and `GPSLongitude` require a fraction-based format. See [here](https://developer.android.com/reference/android/media/ExifInterface#TAG_GPS_LATITUDE) and [here](https://developer.android.com/reference/android/media/ExifInterface#TAG_GPS_LONGITUDE) for more details.
+Values for `GPSLatitude` and `GPSLongitude` can be written as negative values but will be returned as positive values. Use `GPSLatitudeRef` and `GPSLongitudeRef` or `getLatLong()` to determine the correct coordinates.
 
 ### iOS
 
@@ -50,6 +50,8 @@ Only specific EXIF and GPS attributes are supported. Please look at [EXIF dictio
 
 Please note that all [GPS dictionary keys](https://developer.apple.com/documentation/imageio/gps_dictionary_keys) need to be prefixed with `GPS`.
 For example: `kCGImagePropertyGPSLatitude` == `"Latitude"`, which equals to `"GPSLatitude"` in `native_exif`.
+
+Values for `GPSLatitude` and `GPSLongitude` should be of type `String` and can be written as negative values but will be returned as positive values. Use `GPSLatitudeRef` and `GPSLongitudeRef` or `getLatLong()` to determine the correct coordinates.
 
 ## API Docs
 

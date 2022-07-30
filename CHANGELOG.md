@@ -1,3 +1,8 @@
+## 0.3.0
+
+- Switched to androidx ExifInterface.
+- Unified `GPSLatitude` and `GPSLongitude` behaviour.
+
 ## 0.2.1
 
 - Add support for the [Orientation](https://developer.apple.com/documentation/imageio/cgimagepropertyorientation) property on iOS devices.

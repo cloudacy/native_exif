@@ -1,3 +1,8 @@
+## 0.4.0
+
+- Android: Set `compileSdkVersion` and `targetSdkVersion` to `31`.
+- Android: Updated dependencies.
+
 ## 0.3.0
 
 - Switched to androidx ExifInterface.

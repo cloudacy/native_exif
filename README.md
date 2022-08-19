@@ -16,6 +16,7 @@ Now you can run either pre-defined functions or get all attributes:
 
 ```dart
 final originalDate = await exif.getOriginalDate();
+final latLong = await exif.getLatLong();
 final attribute = await exif.getAttribute("key");
 final attributes = await exif.getAttributes();
 ```

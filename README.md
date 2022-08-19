@@ -16,10 +16,14 @@ Now you can run either pre-defined functions or get all attributes:
 
 ```dart
 final originalDate = await exif.getOriginalDate();
+final attribute = await exif.getAttribute("key");
 final attributes = await exif.getAttributes();
 ```
 
 ### Writing attributes
+
+It is possible to write raw EXIF data of type `String` to specific EXIF keys.
+The keys are limited to the EXIF keys provided by the platform. See "Platform notes" for more details.
 
 ```dart
 await exif.writeAttribute("key", "value");

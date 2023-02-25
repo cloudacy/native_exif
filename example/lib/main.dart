@@ -1,11 +1,12 @@
+import 'dart:async';
 import 'dart:io';
-import 'package:path/path.dart' as p;
 
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:intl/intl.dart';
-
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
 import 'package:native_exif/native_exif.dart';
 
 void main() {
@@ -36,6 +37,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> showError(Object e) async {
+    debugPrintStack(label: e.toString(), stackTrace: e is Error ? e.stackTrace : null);
+
     return showDialog<void>(
       context: context,
       builder: (context) {
@@ -120,6 +123,60 @@ class _MyAppState extends State<MyApp> {
                       }
                     },
                     child: const Text('Update date attribute'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      try {
+                        // Get original attributes.
+                        final attrs = await exif!.getAttributes();
+
+                        debugPrint('Original attributes of ${pickedFile!.path}:');
+                        debugPrint(attrs.toString());
+
+                        final dateFormat = DateFormat('yyyy:MM:dd HH:mm:ss');
+                        debugPrint('Write DateTimeOriginal ${dateFormat.format(DateTime.now())}');
+                        await exif!.writeAttribute('DateTimeOriginal', dateFormat.format(DateTime.now()));
+
+                        await exif!.writeAttributes({
+                          'GPSLatitude': '1.0',
+                          'GPSLatitudeRef': 'N',
+                          'GPSLongitude': '2.0',
+                          'GPSLongitudeRef': 'W',
+                        });
+
+                        shootingDate = await exif!.getOriginalDate();
+                        attributes = await exif!.getAttributes();
+
+                        debugPrint('New attributes:');
+                        debugPrint(shootingDate.toString());
+                        debugPrint(attributes.toString());
+
+                        final dir = await getApplicationDocumentsDirectory();
+                        final newPath = p.join(dir.path, p.basename(pickedFile!.path));
+
+                        debugPrint('New path:');
+                        debugPrint(newPath);
+
+                        final newFile = File(newPath);
+                        await newFile.writeAsBytes(await pickedFile!.readAsBytes());
+
+                        pickedFile = XFile(newPath);
+                        exif = await Exif.fromPath(newPath);
+                        attributes = await exif!.getAttributes();
+                        shootingDate = await exif!.getOriginalDate();
+                        coordinates = await exif!.getLatLong();
+
+                        debugPrint('Attributes of $newPath:');
+                        debugPrint(shootingDate.toString());
+                        debugPrint(coordinates.toString());
+                        debugPrint(attributes.toString());
+
+                        setState(() {});
+                      } catch (e) {
+                        showError(e);
+                      }
+                    },
+                    child: const Text('Update, store and reload attributes'),
                   ),
                   TextButton(
                     onPressed: () async {

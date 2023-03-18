@@ -19,7 +19,7 @@ dependencies:
 
   image_picker: ^0.8.5
 
-  intl: ^0.17.0
+  intl: ^0.18.0
 
   path: ">=1.8.0 <1.9.0"
 

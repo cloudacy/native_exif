@@ -1,3 +1,8 @@
+### 0.4.1
+
+- Updated dependencies
+- Migrated gradle repository from jcenter to mavencentral (Thanks @alvarisi for your contribution)
+
 ## 0.4.0
 
 - Android: Set `compileSdkVersion` and `targetSdkVersion` to `31`.

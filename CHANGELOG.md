@@ -1,3 +1,12 @@
+## [0.5.0] - 2023-08-25
+
+- Android!: Set `minSdkVersion` to `19` and `compileSdkVersion` and `targetSdkVersion` to `33`.
+- Android: updated android related files for better consistency with the current flutter plugin template
+- Android: set JVM target to 1.8 to fix compatibility issues (See [#19](https://github.com/cloudacy/native_exif/issues/19#issuecomment-1645544695) for more details) (Thanks @TiffApps for your contribution)
+- Android: AGP update to version 7.4.2
+- Android: removed `.idea` files
+- Android: add optional namespace to be compatible with AGP < 4.2 (Thanks @TiffApps for your contribution)
+
 ## [0.4.1] - 2023-03-18
 
 - Updated dependencies

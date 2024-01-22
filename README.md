@@ -43,15 +43,22 @@ This plugin does **only** work on iOS and Android. Other platforms are not yet s
 
 ### Android
 
-Only specific EXIF and GPS attributes are supported. Please look at [android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt](https://github.com/cloudacy/native_exif/blob/main/android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt) for a list of supported attributes.
+This plugin uses the [androidx ExifInterface](https://developer.android.com/reference/androidx/exifinterface/media/ExifInterface).
+
+> [!IMPORTANT]
+> Only specific EXIF and GPS attributes are supported. Please look at [android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt](https://github.com/cloudacy/native_exif/blob/main/android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt) for a list of supported attributes.
 
 All raw attribute values must be of type `String`.
+
+> [!IMPORTANT]
+> Currently this plugin can only write ASCII characters correctly due to [ExifInterface](https://developer.android.com/reference/androidx/exifinterface/media/ExifInterface) limitations.
 
 Values for `GPSLatitude` and `GPSLongitude` can be written as negative values but will be returned as positive values. Use `GPSLatitudeRef` and `GPSLongitudeRef` or `getLatLong()` to determine the correct coordinates.
 
 ### iOS
 
-Only specific EXIF and GPS attributes are supported. Please look at [EXIF dictionary keys](https://developer.apple.com/documentation/imageio/exif_dictionary_keys) and [GPS dictionary keys](https://developer.apple.com/documentation/imageio/gps_dictionary_keys) for supported attributes.
+> [!IMPORTANT]
+> Only specific EXIF and GPS attributes are supported. Please look at [EXIF dictionary keys](https://developer.apple.com/documentation/imageio/exif_dictionary_keys) and [GPS dictionary keys](https://developer.apple.com/documentation/imageio/gps_dictionary_keys) for supported attributes.
 
 Please note that all [GPS dictionary keys](https://developer.apple.com/documentation/imageio/gps_dictionary_keys) need to be prefixed with `GPS`.
 For example: `kCGImagePropertyGPSLatitude` == `"Latitude"`, which equals to `"GPSLatitude"` in `native_exif`.

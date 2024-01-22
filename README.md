@@ -46,7 +46,7 @@ This plugin does **only** work on iOS and Android. Other platforms are not yet s
 This plugin uses the [androidx ExifInterface](https://developer.android.com/reference/androidx/exifinterface/media/ExifInterface).
 
 > [!IMPORTANT]
-> Only specific EXIF and GPS attributes are supported. Please look at [android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt](https://github.com/cloudacy/native_exif/blob/main/android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt) for a list of supported attributes.
+> Only specific EXIF and GPS attributes are supported. Please look for `val tags = ...` at [android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt](https://github.com/cloudacy/native_exif/blob/main/android/src/main/kotlin/com/cloudacy/native_exif/NativeExifPlugin.kt) for a list of supported attributes.
 
 All raw attribute values must be of type `String`.
 

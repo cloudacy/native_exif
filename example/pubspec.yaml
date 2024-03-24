@@ -15,11 +15,11 @@ dependencies:
   native_exif:
     path: ../
 
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.6
 
-  image_picker: ^1.0.2
+  image_picker: ^1.0.7
 
-  intl: ^0.18.0
+  intl: ^0.19.0
 
   path: ">=1.8.0 <1.9.0"
 

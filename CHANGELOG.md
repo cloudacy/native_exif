@@ -1,3 +1,9 @@
+## [0.6.0] - 2024-04-21
+
+- iOS!: Set minimum iOS version to 12.0
+- Set environment constraints to sdk ^3.3.0 and flutter >3.19.0
+- Updated dependencies
+
 ## [0.5.0] - 2023-08-25
 
 - Android!: Set `minSdkVersion` to `19` and `compileSdkVersion` and `targetSdkVersion` to `33`.

@@ -121,6 +121,7 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
             ExifInterface.TAG_GPS_ALTITUDE_REF,
             ExifInterface.TAG_GPS_DATESTAMP,
             ExifInterface.TAG_GPS_IMG_DIRECTION,
+            ExifInterface.TAG_GPS_IMG_DIRECTION_REF,
             ExifInterface.TAG_GPS_LATITUDE_REF,
             ExifInterface.TAG_GPS_LONGITUDE_REF,
             ExifInterface.TAG_GPS_PROCESSING_METHOD,

@@ -1,3 +1,7 @@
+## [0.6.1] - 2025-05-21
+
+- Set `intl` dependency version constraint to `>=0.19.0` (from `^0.19.0`)
+
 ## [0.6.0] - 2024-04-21
 
 - iOS!: Set minimum iOS version to 12.0

@@ -1,3 +1,14 @@
+## [0.7.0] - 2026-01-24
+
+- Android!: Update android dependencies
+  - Kotlin 2.2.20
+  - com.android.tools.build:gradle 8.11.1
+  - JVM target 17
+  - minSdk 24
+  - compileSdk flutter.compileSdkVersion
+  - exifinterface 1.4.2
+- Android: Catch android-platform exceptions
+
 ## [0.6.2] - 2025-05-21
 
 - Set `intl` dependency version constraint to `>=0.19.0 <0.21.0` (from `>=0.19.0`)

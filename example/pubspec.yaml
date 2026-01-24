@@ -15,21 +15,21 @@ dependencies:
   native_exif:
     path: ../
 
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.8
 
-  image_picker: ^1.1.0
+  image_picker: ^1.2.1
 
   intl: any
 
-  path: ^1.9.0
+  path: ^1.9.1
 
-  path_provider: '>=2.0.0 <3.0.0'
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^3.0.2
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true

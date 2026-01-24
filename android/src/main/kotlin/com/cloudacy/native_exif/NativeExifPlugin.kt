@@ -10,12 +10,12 @@ import io.flutter.plugin.common.MethodChannel.Result
 import kotlin.math.absoluteValue
 
 /** NativeExifPlugin */
-class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
+class NativeExifPlugin : FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
+  private lateinit var channel: MethodChannel
   private var classId = 0
 
   private var interfaces = mutableMapOf<Int, ExifInterface>()
@@ -56,7 +56,8 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    when (call.method) {
+    try {
+      when (call.method) {
         "initPath" -> {
           val exif = ExifInterface(call.arguments as String)
           val id = classId++
@@ -69,14 +70,22 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
           val tag = call.argument<String>("tag")
 
           if (id == null || tag == null) {
-            result.error("BAD_ARGUMENTS", "Bad arguments were given to this method.", null)
+            result.error(
+              "BAD_ARGUMENTS",
+              "Bad arguments were given to this method.",
+              null
+            )
             return
           }
 
           val exif = interfaces[id]
 
           if (exif == null) {
-            result.error("NOT_FOUND", "Exif with given id was not found in memory", null)
+            result.error(
+              "NOT_FOUND",
+              "Exif with given id was not found in memory",
+              null
+            )
             return
           }
 
@@ -92,14 +101,22 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
           val id = call.argument<Int>("id")
 
           if (id == null) {
-            result.error("BAD_ARGUMENTS", "Bad arguments were given to this method.", null)
+            result.error(
+              "BAD_ARGUMENTS",
+              "Bad arguments were given to this method.",
+              null
+            )
             return
           }
 
           val exif = interfaces[id]
 
           if (exif == null) {
-            result.error("NOT_FOUND", "Exif with given id was not found in memory", null)
+            result.error(
+              "NOT_FOUND",
+              "Exif with given id was not found in memory",
+              null
+            )
             return
           }
 
@@ -158,14 +175,22 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
           val value = call.argument<String>("value")
 
           if (id == null || tag == null || value == null) {
-            result.error("BAD_ARGUMENTS", "Bad arguments were given to this method.", null)
+            result.error(
+              "BAD_ARGUMENTS",
+              "Bad arguments were given to this method.",
+              null
+            )
             return
           }
 
           val exif = interfaces[id]
 
           if (exif == null) {
-            result.error("NOT_FOUND", "Exif with given id was not found in memory", null)
+            result.error(
+              "NOT_FOUND",
+              "Exif with given id was not found in memory",
+              null
+            )
             return
           }
 
@@ -179,14 +204,22 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
           val values = call.argument<Map<String, Any>>("values")
 
           if (id == null || values == null) {
-            result.error("BAD_ARGUMENTS", "Bad arguments were given to this method.", null)
+            result.error(
+              "BAD_ARGUMENTS",
+              "Bad arguments were given to this method.",
+              null
+            )
             return
           }
 
           val exif = interfaces[id]
 
           if (exif == null) {
-            result.error("NOT_FOUND", "Exif with given id was not found in memory", null)
+            result.error(
+              "NOT_FOUND",
+              "Exif with given id was not found in memory",
+              null
+            )
             return
           }
 
@@ -199,7 +232,11 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
           val id = call.argument<Int>("id")
 
           if (id == null) {
-            result.error("BAD_ARGUMENTS", "Bad arguments were given to this method.", null)
+            result.error(
+              "BAD_ARGUMENTS",
+              "Bad arguments were given to this method.",
+              null
+            )
             return
           }
 
@@ -210,6 +247,9 @@ class NativeExifPlugin: FlutterPlugin, MethodCallHandler {
         else -> {
           result.notImplemented()
         }
+      }
+    } catch (e: Exception) {
+      result.error("EXCEPTION", e.message, null)
     }
   }
 

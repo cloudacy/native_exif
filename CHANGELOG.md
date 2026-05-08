@@ -1,3 +1,11 @@
+## [0.8.0] - 2026-05-08
+
+- iOS!: SwiftPM support
+  - requires iOS >= 13.0
+  - requires dart >= 3.11
+  - requires Flutter >= 3.41
+- Android: Add support for TAG_GPS_IMG_DIRECTION and TAG_GPS_IMG_DIRECTION_REF
+
 ## [0.7.0] - 2026-01-24
 
 - Android!: Update android dependencies

@@ -29,3 +29,5 @@ flutter:
         pluginClass: NativeExifPlugin
       ios:
         pluginClass: NativeExifPlugin
+      macos:
+        pluginClass: NativeExifPlugin

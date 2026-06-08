@@ -1,3 +1,8 @@
+## [0.9.0] - 2026-06-08
+
+- Migrates to built-in Kotlin
+- Updates minimum supported SDK version to Flutter 3.44/Dart 3.12
+
 ## [0.8.0] - 2026-05-08
 
 - iOS!: SwiftPM support
